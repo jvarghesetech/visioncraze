@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VisionCraze</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#06040f;--surface:#0d0918;--surface2:#130f22;
+  --purple:#7c3aed;--purple-bright:#a855f7;--purple-glow:rgba(124,58,237,0.15);
+  --text:#ede9fe;--muted:#6d5a8a;--border:rgba(124,58,237,0.12);
+  --mono:'JetBrains Mono',monospace;--display:'Syne',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--display);overflow-x:hidden;cursor:none;}
+.cursor{position:fixed;width:8px;height:8px;background:var(--purple-bright);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(168,85,247,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all 0.15s ease;}
+body::after{content:'';position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,0.07),transparent 70%);top:-200px;right:-100px;pointer-events:none;z-index:0;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.5rem 3rem;}
+.nav-links{display:flex;gap:2.5rem;list-style:none;}
+.nav-links a{font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-decoration:none;letter-spacing:0.15em;text-transform:uppercase;transition:color 0.2s;}
+.nav-links a:hover{color:var(--purple-bright);}
+.hero{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:0 3rem;gap:4rem;}
+.hero-eyebrow{font-family:var(--mono);font-size:0.62rem;color:var(--purple-bright);letter-spacing:0.25em;text-transform:uppercase;display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem;}
+.hero-eyebrow::before{content:'';width:20px;height:1px;background:var(--purple-bright);}
+h1{font-family:var(--display);font-size:clamp(3.5rem,6vw,5.5rem);font-weight:800;line-height:1;letter-spacing:-0.03em;color:#fff;margin-bottom:1.5rem;}
+h1 .accent{color:var(--purple-bright);}
+.hero-sub{font-family:var(--mono);font-size:0.78rem;color:var(--muted);line-height:2;max-width:420px;margin-bottom:3rem;font-weight:300;}
+.cta-row{display:flex;gap:1rem;align-items:center;}
+.btn-cta{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;padding:1rem 2rem;background:var(--purple);color:#fff;border:none;border-radius:2px;cursor:none;transition:all 0.2s;text-decoration:none;display:inline-block;}
+.btn-cta:hover{background:var(--purple-bright);box-shadow:0 0 40px rgba(124,58,237,0.4);}
+.btn-ghost{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;padding:1rem 2rem;background:transparent;color:var(--purple-bright);border:1px solid rgba(124,58,237,0.3);border-radius:2px;cursor:none;transition:all 0.2s;text-decoration:none;display:inline-block;}
+.btn-ghost:hover{border-color:var(--purple-bright);background:var(--purple-glow);}
+.hero-right{display:flex;align-items:center;justify-content:center;position:relative;}
+.eye-container{position:relative;width:320px;height:320px;display:flex;align-items:center;justify-content:center;}
+@keyframes rotSlow{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+@keyframes rotRev{from{transform:rotate(0deg);}to{transform:rotate(-360deg);}}
+@keyframes orbPulse{0%,100%{opacity:0.5;}50%{opacity:1;}}
+@keyframes scanEye{0%{top:15%;opacity:0;}8%{opacity:0.8;}92%{opacity:0.8;}100%{top:85%;opacity:0;}}
+@keyframes blinkEye{0%,88%,100%{transform:scaleY(1);}94%{transform:scaleY(0.04);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.ering{position:absolute;border-radius:50%;transform-origin:center;}
+.ering-1{width:310px;height:310px;border:1px dashed rgba(124,58,237,0.12);animation:rotSlow 25s linear infinite;}
+.ering-2{width:270px;height:270px;border:1px solid rgba(124,58,237,0.18);animation:rotRev 18s linear infinite;}
+.ering-3{width:230px;height:230px;border:1px solid rgba(124,58,237,0.25);animation:rotSlow 12s linear infinite;}
+.edot{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--purple-bright);opacity:0.8;}
+.eyeshape{position:absolute;width:170px;height:85px;overflow:hidden;animation:blinkEye 5s ease-in-out infinite;}
+.escanline{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple-bright),transparent);animation:scanEye 3.5s ease-in-out infinite;pointer-events:none;z-index:2;}
+.iris{position:absolute;width:72px;height:72px;border-radius:50%;background:var(--bg);border:1.5px solid var(--purple);display:flex;align-items:center;justify-content:center;animation:orbPulse 2.5s ease-in-out infinite;overflow:hidden;z-index:1;}
+.iris-mid{width:46px;height:46px;border-radius:50%;background:var(--bg);border:1px solid rgba(124,58,237,0.4);display:flex;align-items:center;justify-content:center;position:relative;}
+.pupil{width:20px;height:20px;border-radius:50%;background:var(--purple-bright);opacity:0.9;}
+.shine{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:#e9d5ff;opacity:0.95;}
+.crossline-h{position:absolute;width:220px;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,0.25),transparent);}
+.crossline-v{position:absolute;width:1px;height:220px;background:linear-gradient(180deg,transparent,rgba(124,58,237,0.25),transparent);}
+.stats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.stat{padding:2.5rem 3rem;border-right:1px solid var(--border);}
+.stat:last-child{border-right:none;}
+.stat-num{font-family:var(--display);font-size:2.5rem;font-weight:800;color:#fff;margin-bottom:0.5rem;}
+.stat-num span{color:var(--purple-bright);}
+.stat-label{font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;}
+.how{position:relative;z-index:1;padding:8rem 3rem;}
+.section-label{font-family:var(--mono);font-size:0.62rem;color:var(--purple-bright);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:1rem;}
+h2{font-family:var(--display);font-size:clamp(2rem,4vw,3rem);font-weight:800;color:#fff;margin-bottom:5rem;letter-spacing:-0.02em;}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);}
+.step{padding:2.5rem 2rem;border-left:1px solid var(--border);transition:background 0.3s;}
+.step:hover{background:var(--surface);}
+.step-n{font-family:var(--mono);font-size:0.6rem;color:var(--purple-bright);letter-spacing:0.15em;margin-bottom:1.5rem;display:block;}
+.step-icon{font-size:1.6rem;margin-bottom:1.25rem;display:block;}
+.step h3{font-family:var(--display);font-size:1rem;font-weight:700;color:#fff;margin-bottom:0.75rem;}
+.step p{font-family:var(--mono);font-size:0.72rem;color:var(--muted);line-height:1.8;font-weight:300;}
+.demo{position:relative;z-index:1;padding:8rem 3rem;background:var(--surface);border-top:1px solid var(--border);}
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:4rem;}
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr;padding:6rem 1.5rem 3rem;}
+  .hero-right{display:none;}
+  .demo-grid{grid-template-columns:1fr;}
+  .stats{grid-template-columns:1fr;}
+  .steps{grid-template-columns:1fr 1fr;}
+  nav{padding:1.5rem;}
+  .nav-links{display:none;}
+  .how,.demo{padding:5rem 1.5rem;}
+}
+.panel{background:var(--bg);border:1px solid var(--border);border-radius:2px;overflow:hidden;}
+.panel-top{padding:0.75rem 1.25rem;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;display:flex;align-items:center;gap:0.6rem;}
+.pdot{width:6px;height:6px;border-radius:50%;background:var(--muted);}
+.pdot.live{background:var(--purple-bright);box-shadow:0 0 6px var(--purple-bright);animation:orbPulse 1.5s infinite;}
+#webcam-container{width:100%;aspect-ratio:4/3;background:#04020a;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+#webcam-container video{width:100%!important;height:100%!important;object-fit:cover;}
+.cam-ph{display:flex;flex-direction:column;align-items:center;gap:1rem;color:var(--muted);font-family:var(--mono);font-size:0.65rem;letter-spacing:0.1em;}
+.bracket{position:absolute;width:18px;height:18px;border-color:var(--purple-bright);border-style:solid;opacity:0.5;}
+.bracket.tl{top:10px;left:10px;border-width:1.5px 0 0 1.5px;}
+.bracket.tr{top:10px;right:10px;border-width:1.5px 1.5px 0 0;}
+.bracket.bl{bottom:10px;left:10px;border-width:0 0 1.5px 1.5px;}
+.bracket.br{bottom:10px;right:10px;border-width:0 1.5px 1.5px 0;}
+.scanbar{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple-bright),transparent);opacity:0;pointer-events:none;}
+.scanning .scanbar{animation:scanEye 2.5s linear infinite;}
+.cam-controls{padding:1rem;display:flex;gap:0.75rem;}
+#startBtn{flex:1;background:var(--purple);color:#fff;font-family:var(--mono);font-size:0.7rem;font-weight:400;letter-spacing:0.1em;text-transform:uppercase;padding:0.85rem;border:none;border-radius:2px;cursor:none;transition:all 0.2s;}
+#startBtn:hover{background:var(--purple-bright);}
+#startBtn:disabled{background:var(--muted);}
+.out-body{padding:1.5rem;}
+.out-tag{font-family:var(--mono);font-size:0.6rem;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.75rem;}
+.status-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem;}
+.sbadge{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem 0.75rem;border-radius:1px;}
+.b-idle{background:rgba(109,90,138,0.15);color:var(--muted);border:1px solid rgba(109,90,138,0.2);}
+.b-active{background:rgba(124,58,237,0.12);color:var(--purple-bright);border:1px solid rgba(124,58,237,0.25);}
+.b-speaking{background:rgba(168,85,247,0.12);color:#c084fc;border:1px solid rgba(168,85,247,0.3);}
+.speech-box{background:var(--surface2);border:1px solid var(--border);border-radius:2px;padding:1.25rem;margin-bottom:1.25rem;min-height:90px;display:flex;gap:0.75rem;align-items:flex-start;}
+.speech-icon{font-size:14px;flex-shrink:0;margin-top:3px;}
+#speechText{font-family:var(--mono);font-size:0.75rem;color:var(--text);line-height:1.8;flex:1;}
+#speechText.idle{color:var(--muted);}
+.ctrl-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;}
+.ctrl-row label{font-family:var(--mono);font-size:0.6rem;color:var(--muted);letter-spacing:0.08em;white-space:nowrap;}
+#intervalSlider{flex:1;accent-color:var(--purple-bright);}
+#intervalVal{font-family:var(--mono);font-size:0.65rem;color:var(--purple-bright);min-width:28px;}
+.sel-label{font-family:var(--mono);font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem;}
+select{width:100%;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:2px;padding:0.5rem 0.75rem;font-family:var(--mono);font-size:0.68rem;margin-bottom:1rem;cursor:none;}
+
+
+
+.hist-item{font-family:var(--mono);font-size:0.6rem;color:var(--muted);padding:0.4rem 0;border-bottom:1px solid rgba(124,58,237,0.06);display:flex;gap:0.5rem;}
+.hist-time{color:rgba(124,58,237,0.45);flex-shrink:0;}
+footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:2rem 3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+footer p{font-family:var(--mono);font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;}
+.hero-left>*{animation:fadeUp 0.6s ease forwards;opacity:0;}
+.hero-left>*:nth-child(1){animation-delay:0.1s;}
+.hero-left>*:nth-child(2){animation-delay:0.2s;}
+.hero-left>*:nth-child(3){animation-delay:0.3s;}
+.hero-left>*:nth-child(4){animation-delay:0.4s;}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<nav>
+  <div style="display:flex;align-items:center;gap:12px;"><svg width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+    <rect x="6" y="6" width="32" height="32" rx="8" fill="none" stroke="#a855f7" stroke-width="1" opacity="0.3" transform="rotate(45 22 22)"/>
+    <circle cx="22" cy="22" r="14" fill="#0d0918" stroke="#7c3aed" stroke-width="1"/>
+    <path d="M8,22 Q15,13 22,13 Q29,13 36,22 Q29,31 22,31 Q15,31 8,22 Z" fill="#06040f" stroke="#a855f7" stroke-width="1.2"/>
+    <circle cx="22" cy="22" r="6" fill="#130f22" stroke="#a855f7" stroke-width="1"/>
+    <circle cx="22" cy="22" r="3.5" fill="#a855f7" opacity="0.7"/>
+    <circle cx="22" cy="22" r="1.2" fill="#06040f"/>
+    <circle cx="24.5" cy="19.5" r="1.5" fill="#e9d5ff" opacity="0.95"/>
+    <line x1="9" y1="22" x2="35" y2="22" stroke="#a855f7" stroke-width="0.5" opacity="0.25" stroke-dasharray="3 2"/>
+  </svg>
+  <div>
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:-0.03em;line-height:1;"><span style="color:#ffffff;">VISION</span><span style="color:#a855f7;">CRAZE</span></div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#6d5a8a;letter-spacing:0.2em;margin-top:2px;">AI ASSISTIVE VISION</div>
+  </div></div>
+  <ul class="nav-links">
+    <li><a href="#how">Process</a></li>
+    <li><a href="#demo">Demo</a></li>
+  </ul>
+</nav>
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">AI-powered assistive technology</div>
+    <h1>See the<br/>world with<br/><span class="accent">AI eyes.</span></h1>
+    <p class="hero-sub">VisionCraze narrates your surroundings in real time. Obstacles, terrain, people, signs, traffic lights — all spoken aloud through any camera.</p>
+    <div class="cta-row">
+      <a href="#demo" class="btn-cta">Try the demo</a>
+      <a href="#how" class="btn-ghost">How it works</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="eye-container">
+      <div class="ering ering-1">
+        <div class="edot" style="top:-2px;left:50%;transform:translateX(-50%);"></div>
+        <div class="edot" style="bottom:-2px;left:50%;transform:translateX(-50%);"></div>
+        <div class="edot" style="left:-2px;top:50%;transform:translateY(-50%);"></div>
+        <div class="edot" style="right:-2px;top:50%;transform:translateY(-50%);"></div>
+      </div>
+      <div class="ering ering-2">
+        <div class="edot" style="top:-2px;left:28%;opacity:0.5;"></div>
+        <div class="edot" style="bottom:-2px;right:28%;opacity:0.5;"></div>
+      </div>
+      <div class="ering ering-3"></div>
+      <div class="escanline"></div>
+      <div class="eyeshape">
+        <svg viewBox="0 0 170 85" fill="none" xmlns="http://www.w3.org/2000/svg" width="170" height="85">
+          <path d="M4,42 Q42,4 85,4 Q128,4 166,42 Q128,81 85,81 Q42,81 4,42 Z" fill="#06040f" stroke="#a855f7" stroke-width="1.2"/>
+          <line x1="42" y1="8" x2="40" y2="2" stroke="#a855f7" stroke-width="0.8" opacity="0.4"/>
+          <line x1="63" y1="5" x2="62" y2="0" stroke="#a855f7" stroke-width="0.8" opacity="0.4"/>
+          <line x1="85" y1="4" x2="85" y2="0" stroke="#a855f7" stroke-width="0.8" opacity="0.4"/>
+          <line x1="107" y1="5" x2="108" y2="0" stroke="#a855f7" stroke-width="0.8" opacity="0.4"/>
+          <line x1="128" y1="8" x2="130" y2="2" stroke="#a855f7" stroke-width="0.8" opacity="0.4"/>
+        </svg>
+      </div>
+      <div class="iris">
+        <div class="iris-mid">
+          <div class="pupil"></div>
+          <div class="shine"></div>
+        </div>
+      </div>
+      <div class="crossline-h"></div>
+      <div class="crossline-v"></div>
+    </div>
+  </div>
+</section>
+<div class="stats">
+  <div class="stat"><div class="stat-num">285<span>M</span></div><div class="stat-label">Visually impaired people worldwide</div></div>
+  <div class="stat"><div class="stat-num">&lt;1<span>s</span></div><div class="stat-label">Detection and narration time</div></div>
+  <div class="stat"><div class="stat-num">15<span>+</span></div><div class="stat-label">Detection categories</div></div>
+</div>
+<section class="how" id="how">
+  <div class="section-label">// process</div>
+  <h2>How it works</h2>
+  <div class="steps">
+    <div class="step"><span class="step-n">01</span><span class="step-icon">📷</span><h3>Capture</h3><p>A camera mounted on the glasses frame continuously captures the user's field of view in real time.</p></div>
+    <div class="step"><span class="step-n">02</span><span class="step-icon">🧠</span><h3>Analyze</h3><p>The VisionCraze Neural Engine processes each frame, identifying obstacles, terrain, individuals, and hazards.</p></div>
+    <div class="step"><span class="step-n">03</span><span class="step-icon">🔊</span><h3>Narrate</h3><p>A speaker delivers clear audio alerts such as "obstacle two feet ahead" or "stairs going down, eight steps."</p></div>
+    <div class="step"><span class="step-n">04</span><span class="step-icon">🧭</span><h3>Navigate</h3><p>With continuous environmental awareness, users navigate any setting safely and independently.</p></div>
+  </div>
+</section>
+<section class="demo" id="demo">
+  <div class="section-label">// live demo</div>
+  <h2>Point. Detect. Hear.</h2>
+  <div class="demo-grid">
+    <div class="panel">
+      <div class="panel-top"><span class="pdot" id="camDot"></span>camera feed</div>
+      <div id="webcam-container">
+        <div class="scanbar"></div>
+        <div class="bracket tl"></div><div class="bracket tr"></div>
+        <div class="bracket bl"></div><div class="bracket br"></div>
+        <div class="cam-ph" id="camPh">
+          <svg width="44" height="44" viewBox="0 0 52 52" fill="none">
+            <rect x="4" y="14" width="44" height="32" rx="4" stroke="#7c3aed" stroke-width="1.2" opacity="0.4"/>
+            <circle cx="26" cy="30" r="9" stroke="#7c3aed" stroke-width="1.2" opacity="0.4"/>
+            <circle cx="26" cy="30" r="3.5" fill="#7c3aed" opacity="0.3"/>
+            <rect x="18" y="8" width="16" height="7" rx="3" stroke="#7c3aed" stroke-width="1.2" opacity="0.4"/>
+          </svg>
+          <span style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;">camera inactive</span>
+        </div>
+      </div>
+      <div style="padding:0.75rem 1.25rem;border-top:1px solid var(--border);">
+        <div class="sel-label">Camera source</div>
+        <select id="cameraSelect" onchange="switchCamera(this.value)"><option value="">Detecting cameras...</option></select>
+      </div>
+      <div class="cam-controls">
+        <button id="startBtn" onclick="startCamera()">▶ Start Camera</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-top"><span class="pdot" id="liveDot"></span>narration output</div>
+      <div class="out-body">
+        <div class="status-row">
+          <span class="sbadge b-idle" id="statusBadge">idle</span>
+          <span style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);" id="statusNote">Start camera to begin</span>
+        </div>
+        <div class="out-tag">What VisionCraze sees</div>
+        <div class="speech-box">
+          <span class="speech-icon">🔊</span>
+          <div id="speechText" class="idle">Waiting for camera feed...</div>
+        </div>
+        <div class="ctrl-row">
+          <label>Scan every</label>
+          <input type="range" id="intervalSlider" min="3" max="15" value="5" step="1" oninput="updateInterval(this.value)"/>
+          <span id="intervalVal">5s</span>
+        </div>
+        <div class="sel-label">Speaker output</div>
+        <select id="speakerSelect"><option value="">Default speaker</option></select>
+
+        <div id="history" style="display:none;">
+          <div class="out-tag" style="margin-top:1rem;">Recent narrations</div>
+          <div id="historyList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <svg width="32" height="32" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+      <rect x="6" y="6" width="32" height="32" rx="8" fill="none" stroke="#a855f7" stroke-width="1" opacity="0.3" transform="rotate(45 22 22)"/>
+      <circle cx="22" cy="22" r="14" fill="#0d0918" stroke="#7c3aed" stroke-width="1"/>
+      <path d="M8,22 Q15,13 22,13 Q29,13 36,22 Q29,31 22,31 Q15,31 8,22 Z" fill="#06040f" stroke="#a855f7" stroke-width="1.2"/>
+      <circle cx="22" cy="22" r="6" fill="#130f22" stroke="#a855f7" stroke-width="1"/>
+      <circle cx="22" cy="22" r="3.5" fill="#a855f7" opacity="0.7"/>
+      <circle cx="22" cy="22" r="1.2" fill="#06040f"/>
+      <circle cx="24.5" cy="19.5" r="1.5" fill="#e9d5ff" opacity="0.95"/>
+    </svg>
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;letter-spacing:-0.02em;"><span style="color:#fff;">VISION</span><span style="color:#a855f7;">CRAZE</span></div>
+  </div>
+  <p>Built for accessibility &middot; Hackathon 2026</p>
+</footer>
+<script>
+const cursor=document.getElementById('cursor'),cursorRing=document.getElementById('cursorRing');
+document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';setTimeout(()=>{cursorRing.style.left=e.clientX+'px';cursorRing.style.top=e.clientY+'px';},80);});
+let stream=null,videoEl=null,intervalId=null,scanInterval=5000,selectedCameraId=null;
+let isRunning=false,currentUtterance=null,availableVoices=[];
+window.addEventListener('load',()=>{loadDevices();speechSynthesis.onvoiceschanged=()=>{availableVoices=speechSynthesis.getVoices();};availableVoices=speechSynthesis.getVoices();});
+async function loadDevices(){try{await navigator.mediaDevices.getUserMedia({video:true,audio:false});const devices=await navigator.mediaDevices.enumerateDevices();const camSel=document.getElementById('cameraSelect'),spkSel=document.getElementById('speakerSelect');camSel.innerHTML='';spkSel.innerHTML='<option value="">Default speaker</option>';let ci=0;devices.forEach(d=>{if(d.kind==='videoinput'){const o=document.createElement('option');o.value=d.deviceId;o.textContent=d.label||'Camera '+(++ci);camSel.appendChild(o);}if(d.kind==='audiooutput'){const o=document.createElement('option');o.value=d.deviceId;o.textContent=d.label||'Speaker '+(ci+1);spkSel.appendChild(o);}});if(camSel.options.length>0)selectedCameraId=camSel.options[0].value;}catch(e){}}
+function switchCamera(id){selectedCameraId=id;if(isRunning){stopCamera();setTimeout(startCamera,300);}}
+
+function getBestVoice(){if(!availableVoices.length)availableVoices=speechSynthesis.getVoices();const v=availableVoices;return v.find(x=>/en/i.test(x.lang))||v[0];}
+function updateInterval(val){document.getElementById('intervalVal').textContent=val+'s';scanInterval=val*1000;if(isRunning){clearInterval(intervalId);intervalId=setInterval(analyzeFrame,scanInterval);}}
+async function startCamera(){const btn=document.getElementById('startBtn');btn.disabled=true;btn.textContent='Starting...';try{let vc=selectedCameraId?{deviceId:{exact:selectedCameraId}}:{width:{ideal:640},height:{ideal:480}};try{stream=await navigator.mediaDevices.getUserMedia({video:vc,audio:false});}catch(e1){stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});}await loadDevices();videoEl=document.createElement('video');videoEl.srcObject=stream;videoEl.autoplay=true;videoEl.playsInline=true;videoEl.muted=true;videoEl.setAttribute('playsinline','');videoEl.setAttribute('webkit-playsinline','');videoEl.style.cssText='width:100%;height:100%;object-fit:cover;';document.getElementById('camPh').style.display='none';document.getElementById('webcam-container').appendChild(videoEl);await videoEl.play().catch(()=>{});document.getElementById('webcam-container').classList.add('scanning');document.getElementById('camDot').classList.add('live');document.getElementById('liveDot').classList.add('live');btn.textContent='■ Stop';btn.disabled=false;btn.onclick=stopCamera;isRunning=true;setStatus('active','Analyzing every '+document.getElementById('intervalSlider').value+'s');intervalId=setInterval(analyzeFrame,scanInterval);analyzeFrame();}catch(e){btn.disabled=false;btn.textContent='▶ Start Camera';btn.onclick=startCamera;alert(e.name==='NotAllowedError'?'Permission denied. Safari menu > Settings > Websites > Camera > Allow. Then refresh.':'Camera error: '+e.message);}}
+function stopCamera(){isRunning=false;clearInterval(intervalId);if(stream)stream.getTracks().forEach(t=>t.stop());if(videoEl)videoEl.remove();document.getElementById('camPh').style.display='flex';document.getElementById('webcam-container').classList.remove('scanning');document.getElementById('camDot').classList.remove('live');document.getElementById('liveDot').classList.remove('live');const btn=document.getElementById('startBtn');btn.textContent='▶ Start Camera';btn.onclick=startCamera;setStatus('idle','Start camera to begin');setSpeechText('Waiting for camera feed...',true);}
+function captureFrame(){const c=document.createElement('canvas');c.width=640;c.height=480;c.getContext('2d').drawImage(videoEl,0,0,640,480);return c.toDataURL('image/jpeg',0.7).split(',')[1];}
+async function analyzeFrame(){if(!isRunning||!videoEl)return;setStatus('active','Scanning...');try{const imageData=captureFrame();const response=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':'YOUR_ANTHROPIC_API_KEY_HERE','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:`You are a navigation assistant for a blind person wearing smart glasses. Analyze the image and give a clear, spoken audio description in 2-3 short sentences. Always prioritize the most urgent safety information first. Cover the following when relevant:\n\nSAFETY FIRST:\n- Obstacles and exact estimated distance (close = under 1 meter, near = 1 to 3 meters, far = over 3 meters)\n- Stairs: state going up or down, count the number of steps visible, and warn if they are steep or narrow\n- Low hanging objects at head height such as signs, branches, or cabinets\n- Wet floors, reflective or slippery surfaces\n- Narrow passages, tight doorways, or corridors\n- Objects on the floor that could cause tripping such as bags, boxes, or cables\n- Moving vehicles, cyclists, or fast moving people nearby\n- URGENT THREATS: If a vehicle, bicycle, animal, or person is moving fast directly toward the user, immediately say WARNING followed by what it is and from which direction\n- Aggressive body language from nearby individuals if visible\n- Any object that appears to be falling or unstable nearby\n\nNAVIGATION:\n- Terrain type such as concrete, carpet, wood floor, grass, gravel, mud, or tiles\n- Whether indoors or outdoors\n- Door ahead: state if open or closed, and which side the handle appears to be on\n- Crosswalks, intersections, curbs, or elevation changes going uphill or downhill\n- Lighting conditions if very dark or very bright\n- Traffic light color if visible, state red, green, or amber clearly\n- Bus or train numbers if visible on approaching vehicles, read them aloud\n- Whether it appears safe or unsafe to cross a road based on traffic\n\nCONTEXT:\n- Number of people nearby and their approximate position\n- Whether the space is crowded or empty\n- Any visible text, signs, door numbers, street names, building numbers, or labels, read them aloud\n- Describe the appearance of any person directly in front of the user\n- If someone appears to be trying to get the user attention, state this clearly\n\nEVERYDAY TASKS:\n- If a menu, price tag, expiry date, or any printed text is visible, read it out fully\n- If currency or money is visible, identify the denomination and currency\n- If clothing is visible, identify the dominant colors\n- If a glass, cup, or container is visible, state whether it appears full, half full, or empty\n- If a stove, oven, or appliance is visible, state whether it appears to be on or off\n\nSpeak naturally as if talking directly to the person. Be concise. Never exceed 3 sentences. Always start with the single most important safety alert.`,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:imageData}},{type:'text',text:'Describe this scene for a blind person navigating this environment.'}]}]})});const data=await response.json();const text=data.content&&data.content[0]?data.content[0].text:'Could not analyze scene.';setSpeechText(text,false);speak(text);addHistory(text);setStatus('speaking','Narrating...');}catch(e){console.error(e);setSpeechText('Analysis error. Check connection.',false);setStatus('active','Error — retrying next scan');}}
+function speak(text){if(currentUtterance)speechSynthesis.cancel();currentUtterance=new SpeechSynthesisUtterance(text);currentUtterance.voice=getBestVoice();currentUtterance.rate=1.1;currentUtterance.pitch=1;currentUtterance.volume=1;currentUtterance.onend=()=>{if(isRunning)setStatus('active','Listening...');};speechSynthesis.speak(currentUtterance);}
+function setSpeechText(text,idle){const el=document.getElementById('speechText');el.textContent=text;el.className=idle?'idle':'';}
+function setStatus(type,note){const badge=document.getElementById('statusBadge'),noteEl=document.getElementById('statusNote');badge.className='sbadge';badge.classList.add(type==='idle'?'b-idle':type==='active'?'b-active':'b-speaking');badge.textContent=type;noteEl.textContent=note;}
+function addHistory(text){const hist=document.getElementById('history'),list=document.getElementById('historyList');hist.style.display='block';const now=new Date();const time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0')+':'+now.getSeconds().toString().padStart(2,'0');const item=document.createElement('div');item.className='hist-item';item.innerHTML=`<span class="hist-time">${time}</span><span>${text}</span>`;list.insertBefore(item,list.firstChild);if(list.children.length>5)list.removeChild(list.lastChild);}
+</script>
+</body>
+</html>
